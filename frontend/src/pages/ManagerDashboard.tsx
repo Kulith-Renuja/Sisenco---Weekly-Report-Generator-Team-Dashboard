@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useContext, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import api from '../services/api';
 import type { Report, Project, User } from '../types';
-import { AuthContext } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import AIChatWidget from '../components/AIChatWidget';
 import {
@@ -22,7 +21,6 @@ import {
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
 
 const ManagerDashboard: React.FC = () => {
-  const authContext = useContext(AuthContext);
   const [reports, setReports] = useState<Report[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [newProjectName, setNewProjectName] = useState('');
@@ -123,159 +121,159 @@ const ManagerDashboard: React.FC = () => {
       <div className="dashboard-layout">
         {error && <div style={styles.error}>{error}</div>}
 
-      {/* Summary Metrics Section */}
-      <div style={styles.metricsContainer}>
-        <div style={styles.metricCard}>
-          <h3 style={styles.metricTitle}>Total Team Reports</h3>
-          <p style={styles.metricValue}>{totalReports}</p>
-        </div>
-        <div style={styles.metricCard}>
-          <h3 style={styles.metricTitle}>Submission Compliance</h3>
-          <p style={styles.metricValue}>{complianceRate}%</p>
-          <p style={styles.metricSub}>{submittedReports} of {totalReports} finalized</p>
-        </div>
-        <div style={styles.metricCard}>
-          <h3 style={styles.metricTitle}>Reports with Blockers</h3>
-          <p style={styles.metricValue}>{openBlockers}</p>
-        </div>
-      </div>
-
-      {/* Recharts Visualization Section */}
-      <div style={styles.chartsGrid}>
-        <div style={styles.chartCard}>
-          <h3 style={styles.chartTitle}>Reports by Project</h3>
-          {reportsByProject.length > 0 ? (
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={reportsByProject} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-                <XAxis dataKey="name" tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
-                <YAxis allowDecimals={false} tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
-                <Tooltip cursor={{ fill: '#f3f4f6' }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }} />
-                <Bar dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={40} />
-              </BarChart>
-            </ResponsiveContainer>
-          ) : (
-            <p style={styles.emptyText}>No data available to chart.</p>
-          )}
+        {/* Summary Metrics Section */}
+        <div style={styles.metricsContainer}>
+          <div style={styles.metricCard}>
+            <h3 style={styles.metricTitle}>Total Team Reports</h3>
+            <p style={styles.metricValue}>{totalReports}</p>
+          </div>
+          <div style={styles.metricCard}>
+            <h3 style={styles.metricTitle}>Submission Compliance</h3>
+            <p style={styles.metricValue}>{complianceRate}%</p>
+            <p style={styles.metricSub}>{submittedReports} of {totalReports} finalized</p>
+          </div>
+          <div style={styles.metricCard}>
+            <h3 style={styles.metricTitle}>Reports with Blockers</h3>
+            <p style={styles.metricValue}>{openBlockers}</p>
+          </div>
         </div>
 
-        <div style={styles.chartCard}>
-          <h3 style={styles.chartTitle}>Overall Submission Status</h3>
-          {statusData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={statusData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  paddingAngle={5}
-                  dataKey="value"
-                  label
-                >
-                  {statusData.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }} />
-                <Legend verticalAlign="bottom" height={36} iconType="circle" />
-              </PieChart>
-            </ResponsiveContainer>
-          ) : (
-            <p style={styles.emptyText}>No data available to chart.</p>
-          )}
-        </div>
-      </div>
-
-      {/* Project Management Section */}
-      <div style={styles.projectManagementCard}>
-        <h2 style={styles.tableCardTitle}>Project Management</h2>
-        <div style={styles.projectManagementBody}>
-          <form onSubmit={handleCreateProject} style={styles.addProjectForm}>
-            <input 
-              type="text" 
-              placeholder="New Project Name" 
-              value={newProjectName}
-              onChange={(e) => setNewProjectName(e.target.value)}
-              style={styles.addProjectInput}
-            />
-            <button type="submit" style={styles.addProjectBtn} disabled={!newProjectName.trim() || loading}>
-              Add Project
-            </button>
-          </form>
-          
-          <div style={styles.projectsList}>
-            {projects.length === 0 ? (
-              <p style={styles.emptyText}>No projects created yet.</p>
+        {/* Recharts Visualization Section */}
+        <div style={styles.chartsGrid}>
+          <div style={styles.chartCard}>
+            <h3 style={styles.chartTitle}>Reports by Project</h3>
+            {reportsByProject.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={reportsByProject} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                  <XAxis dataKey="name" tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
+                  <YAxis allowDecimals={false} tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
+                  <Tooltip cursor={{ fill: '#f3f4f6' }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }} />
+                  <Bar dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={40} />
+                </BarChart>
+              </ResponsiveContainer>
             ) : (
-              projects.map(project => (
-                <div key={project._id} style={styles.projectRow}>
-                  <span style={styles.projectName}>{project.name}</span>
-                  <button onClick={() => handleDeleteProject(project._id as string)} style={styles.deleteBtn}>
-                    Delete
-                  </button>
-                </div>
-              ))
+              <p style={styles.emptyText}>No data available to chart.</p>
+            )}
+          </div>
+
+          <div style={styles.chartCard}>
+            <h3 style={styles.chartTitle}>Overall Submission Status</h3>
+            {statusData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={statusData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={5}
+                    dataKey="value"
+                    label
+                  >
+                    {statusData.map((_, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }} />
+                  <Legend verticalAlign="bottom" height={36} iconType="circle" />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <p style={styles.emptyText}>No data available to chart.</p>
             )}
           </div>
         </div>
-      </div>
 
-      {/* Data Table Section */}
-      <div style={styles.tableCard}>
-        <h2 style={styles.tableCardTitle}>Team Reports Detail</h2>
-        {reports.length === 0 ? (
-          <p style={styles.emptyText}>No reports have been submitted across the team yet.</p>
-        ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={styles.table}>
-              <thead>
-                <tr style={styles.trHead}>
-                  <th style={styles.th}>Team Member</th>
-                  <th style={styles.th}>Week Start</th>
-                  <th style={styles.th}>Project</th>
-                  <th style={styles.th}>Status</th>
-                  <th style={styles.th}>Blockers</th>
-                </tr>
-              </thead>
-              <tbody>
-                {reports.map((report) => (
-                  <tr key={report._id} style={styles.trBody}>
-                    <td style={styles.td}>
-                      <div style={styles.userName}>{(report.user as User)?.name || 'Unknown'}</div>
-                      <div style={styles.userEmail}>{(report.user as User)?.email || ''}</div>
-                    </td>
-                    <td style={styles.td}>
-                      {new Date(report.weekStartDate).toLocaleDateString()}
-                    </td>
-                    <td style={styles.td}>
-                      {(report.project as Project)?.name || 'Unknown'}
-                    </td>
-                    <td style={styles.td}>
-                      <span style={{
-                        ...styles.badge,
-                        backgroundColor: report.status === 'Submitted' ? '#dcfce7' : '#fef3c7',
-                        color: report.status === 'Submitted' ? '#166534' : '#92400e'
-                      }}>
-                        {report.status}
-                      </span>
-                    </td>
-                    <td style={styles.td}>
-                      <div style={styles.truncateText} title={report.blockers}>
-                        {report.blockers}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        {/* Project Management Section */}
+        <div style={styles.projectManagementCard}>
+          <h2 style={styles.tableCardTitle}>Project Management</h2>
+          <div style={styles.projectManagementBody}>
+            <form onSubmit={handleCreateProject} style={styles.addProjectForm}>
+              <input
+                type="text"
+                placeholder="New Project Name"
+                value={newProjectName}
+                onChange={(e) => setNewProjectName(e.target.value)}
+                style={styles.addProjectInput}
+              />
+              <button type="submit" style={styles.addProjectBtn} disabled={!newProjectName.trim() || loading}>
+                Add Project
+              </button>
+            </form>
+
+            <div style={styles.projectsList}>
+              {projects.length === 0 ? (
+                <p style={styles.emptyText}>No projects created yet.</p>
+              ) : (
+                projects.map(project => (
+                  <div key={project._id} style={styles.projectRow}>
+                    <span style={styles.projectName}>{project.name}</span>
+                    <button onClick={() => handleDeleteProject(project._id as string)} style={styles.deleteBtn}>
+                      Delete
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
-        )}
-      </div>
+        </div>
 
-      {/* AI Assistant Chat Widget */}
-      <AIChatWidget />
+        {/* Data Table Section */}
+        <div style={styles.tableCard}>
+          <h2 style={styles.tableCardTitle}>Team Reports Detail</h2>
+          {reports.length === 0 ? (
+            <p style={styles.emptyText}>No reports have been submitted across the team yet.</p>
+          ) : (
+            <div style={{ overflowX: 'auto' }}>
+              <table style={styles.table}>
+                <thead>
+                  <tr style={styles.trHead}>
+                    <th style={styles.th}>Team Member</th>
+                    <th style={styles.th}>Week Start</th>
+                    <th style={styles.th}>Project</th>
+                    <th style={styles.th}>Status</th>
+                    <th style={styles.th}>Blockers</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {reports.map((report) => (
+                    <tr key={report._id} style={styles.trBody}>
+                      <td style={styles.td}>
+                        <div style={styles.userName}>{(report.user as User)?.name || 'Unknown'}</div>
+                        <div style={styles.userEmail}>{(report.user as User)?.email || ''}</div>
+                      </td>
+                      <td style={styles.td}>
+                        {new Date(report.weekStartDate).toLocaleDateString()}
+                      </td>
+                      <td style={styles.td}>
+                        {(report.project as Project)?.name || 'Unknown'}
+                      </td>
+                      <td style={styles.td}>
+                        <span style={{
+                          ...styles.badge,
+                          backgroundColor: report.status === 'Submitted' ? '#dcfce7' : '#fef3c7',
+                          color: report.status === 'Submitted' ? '#166534' : '#92400e'
+                        }}>
+                          {report.status}
+                        </span>
+                      </td>
+                      <td style={styles.td}>
+                        <div style={styles.truncateText} title={report.blockers}>
+                          {report.blockers}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {/* AI Assistant Chat Widget */}
+        <AIChatWidget />
       </div>
     </>
   );
@@ -307,7 +305,7 @@ const styles = {
   emptyText: { padding: '3rem', textAlign: 'center' as const, color: '#64748b', fontSize: '0.875rem', width: '100%' },
   badge: { padding: '0.25rem 0.625rem', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 600 },
   truncateText: { maxWidth: '250px', whiteSpace: 'nowrap' as const, overflow: 'hidden', textOverflow: 'ellipsis' },
-  
+
   projectManagementCard: { backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden', border: '1px solid #e5e7eb', marginBottom: '2rem' },
   projectManagementBody: { padding: '1.5rem' },
   addProjectForm: { display: 'flex', gap: '1rem', marginBottom: '1.5rem' },

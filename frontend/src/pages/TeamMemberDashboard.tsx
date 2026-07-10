@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import type { Project, Report } from '../types';
 import ReportForm from '../components/ReportForm';
-import { AuthContext } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 
 const TeamMemberDashboard: React.FC = () => {
-  const authContext = useContext(AuthContext);
 
   const [reports, setReports] = useState<Report[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
@@ -42,7 +40,7 @@ const TeamMemberDashboard: React.FC = () => {
     try {
       if (editingReport) {
         const res = await api.put(`/reports/${editingReport._id}`, data);
-        
+
         const selectedProject = projects.find(p => p._id === res.data.project);
         const updatedReport = {
           ...res.data,
@@ -101,82 +99,82 @@ const TeamMemberDashboard: React.FC = () => {
       <div className="dashboard-layout">
         {error && <div style={styles.error}>{error}</div>}
 
-      {/* Actions Area */}
-      <div style={styles.actions}>
-        {!showForm && (
-          <button style={styles.primaryBtn} onClick={() => setShowForm(true)}>
-            + Create New Report
-          </button>
+        {/* Actions Area */}
+        <div style={styles.actions}>
+          {!showForm && (
+            <button style={styles.primaryBtn} onClick={() => setShowForm(true)}>
+              + Create New Report
+            </button>
+          )}
+        </div>
+
+        {/* Conditional Form Render */}
+        {showForm && (
+          <ReportForm
+            projects={projects}
+            onSubmit={handleSaveReport}
+            onCancel={handleCancelForm}
+            initialData={editingReport}
+          />
         )}
-      </div>
 
-      {/* Conditional Form Render */}
-      {showForm && (
-        <ReportForm
-          projects={projects}
-          onSubmit={handleSaveReport}
-          onCancel={handleCancelForm}
-          initialData={editingReport}
-        />
-      )}
+        {/* Reports Table Card */}
+        <div style={styles.card}>
+          <h2 style={styles.cardTitle}>Past Reports</h2>
 
-      {/* Reports Table Card */}
-      <div style={styles.card}>
-        <h2 style={styles.cardTitle}>Past Reports</h2>
-
-        {reports.length === 0 ? (
-          <p style={styles.emptyText}>You haven't submitted any reports yet.</p>
-        ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={styles.table}>
-              <thead>
-                <tr style={styles.trHead}>
-                  <th style={styles.th}>Week</th>
-                  <th style={styles.th}>Project</th>
-                  <th style={styles.th}>Status</th>
-                  <th style={styles.th}>Submitted At</th>
-                  <th style={styles.th}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {reports.map((report) => (
-                  <tr key={report._id} style={styles.trBody}>
-                    <td style={styles.td}>
-                      {new Date(report.weekStartDate).toLocaleDateString()} — {new Date(report.weekEndDate).toLocaleDateString()}
-                    </td>
-                    <td style={styles.td}>
-                      {(report.project as Project).name || 'Unknown Project'}
-                    </td>
-                    <td style={styles.td}>
-                      <span style={{
-                        ...styles.badge,
-                        backgroundColor: report.status === 'Submitted' ? '#dcfce7' : '#fef3c7',
-                        color: report.status === 'Submitted' ? '#166534' : '#92400e'
-                      }}>
-                        {report.status}
-                      </span>
-                    </td>
-                    <td style={styles.td}>
-                      {report.submittedAt
-                        ? new Date(report.submittedAt).toLocaleDateString()
-                        : '—'}
-                    </td>
-                    <td style={styles.td}>
-                      <button className="dashboard-action-btn edit" onClick={() => handleEditClick(report)}>
-                        Edit
-                      </button>
-                      <button className="dashboard-action-btn delete" onClick={() => handleDelete(report._id as string)}>
-                        Delete
-                      </button>
-                    </td>
+          {reports.length === 0 ? (
+            <p style={styles.emptyText}>You haven't submitted any reports yet.</p>
+          ) : (
+            <div style={{ overflowX: 'auto' }}>
+              <table style={styles.table}>
+                <thead>
+                  <tr style={styles.trHead}>
+                    <th style={styles.th}>Week</th>
+                    <th style={styles.th}>Project</th>
+                    <th style={styles.th}>Status</th>
+                    <th style={styles.th}>Submitted At</th>
+                    <th style={styles.th}>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                </thead>
+                <tbody>
+                  {reports.map((report) => (
+                    <tr key={report._id} style={styles.trBody}>
+                      <td style={styles.td}>
+                        {new Date(report.weekStartDate).toLocaleDateString()} — {new Date(report.weekEndDate).toLocaleDateString()}
+                      </td>
+                      <td style={styles.td}>
+                        {(report.project as Project).name || 'Unknown Project'}
+                      </td>
+                      <td style={styles.td}>
+                        <span style={{
+                          ...styles.badge,
+                          backgroundColor: report.status === 'Submitted' ? '#dcfce7' : '#fef3c7',
+                          color: report.status === 'Submitted' ? '#166534' : '#92400e'
+                        }}>
+                          {report.status}
+                        </span>
+                      </td>
+                      <td style={styles.td}>
+                        {report.submittedAt
+                          ? new Date(report.submittedAt).toLocaleDateString()
+                          : '—'}
+                      </td>
+                      <td style={styles.td}>
+                        <button className="dashboard-action-btn edit" onClick={() => handleEditClick(report)}>
+                          Edit
+                        </button>
+                        <button className="dashboard-action-btn delete" onClick={() => handleDelete(report._id as string)}>
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
     </>
   );
 };
