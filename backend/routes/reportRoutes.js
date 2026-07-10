@@ -4,6 +4,8 @@ const {
   createReport,
   getMyReports,
   getAllReports,
+  updateReport,
+  deleteReport,
 } = require('../controllers/reportController');
 const { protect } = require('../middleware/authMiddleware');
 const { authorize } = require('../middleware/roleMiddleware');
@@ -19,5 +21,11 @@ router.post('/', authorize('Team Member'), createReport);
 
 // GET /api/reports/my-reports - Accessible to Team Members to view their own reports
 router.get('/my-reports', authorize('Team Member'), getMyReports);
+
+// PUT /api/reports/:id - Accessible to Team Members to update their own report
+router.put('/:id', authorize('Team Member'), updateReport);
+
+// DELETE /api/reports/:id - Accessible to Team Members to delete their own report
+router.delete('/:id', authorize('Team Member'), deleteReport);
 
 module.exports = router;

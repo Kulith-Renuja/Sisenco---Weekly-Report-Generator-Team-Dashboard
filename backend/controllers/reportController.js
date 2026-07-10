@@ -87,8 +87,67 @@ const getAllReports = async (req, res) => {
   }
 };
 
+/**
+ * @desc    Update a report
+ * @route   PUT /api/reports/:id
+ * @access  Private (Team Member only)
+ */
+const updateReport = async (req, res) => {
+  try {
+    const report = await Report.findById(req.params.id);
+
+    if (!report) {
+      return res.status(404).json({ message: 'Report not found' });
+    }
+
+    // Verify ownership
+    if (report.user.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'User not authorized to update this report' });
+    }
+
+    const updatedReport = await Report.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    res.status(200).json(updatedReport);
+  } catch (error) {
+    console.error('Error in updateReport:', error.message);
+    res.status(500).json({ message: 'Server error updating report' });
+  }
+};
+
+/**
+ * @desc    Delete a report
+ * @route   DELETE /api/reports/:id
+ * @access  Private (Team Member only)
+ */
+const deleteReport = async (req, res) => {
+  try {
+    const report = await Report.findById(req.params.id);
+
+    if (!report) {
+      return res.status(404).json({ message: 'Report not found' });
+    }
+
+    // Verify ownership
+    if (report.user.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'User not authorized to delete this report' });
+    }
+
+    await report.deleteOne();
+    res.status(200).json({ id: req.params.id, message: 'Report deleted successfully' });
+  } catch (error) {
+    console.error('Error in deleteReport:', error.message);
+    res.status(500).json({ message: 'Server error deleting report' });
+  }
+};
+
 module.exports = {
   createReport,
   getMyReports,
   getAllReports,
+  updateReport,
+  deleteReport,
 };
