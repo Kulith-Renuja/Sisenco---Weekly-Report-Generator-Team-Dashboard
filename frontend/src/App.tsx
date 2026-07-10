@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import TeamMemberDashboard from './pages/TeamMemberDashboard';
 
 // ProtectedRoute Component: Ensures user is authenticated before accessing wrapped routes
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -26,43 +27,33 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-// Placeholder Dashboard Component
-const DashboardPlaceholder = () => {
+// Role-based routing component for the root path
+const DashboardRedirect = () => {
   const authContext = useContext(AuthContext);
   
+  if (authContext?.user?.role === 'Team Member') {
+    return <TeamMemberDashboard />;
+  }
+  
+  // If role is Manager, show placeholder for now (will be implemented next)
   return (
-    <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-      <h1>Dashboard Placeholder</h1>
-      <div style={{ backgroundColor: '#f3f4f6', padding: '1.5rem', borderRadius: '8px', marginTop: '1rem' }}>
-        <p><strong>Welcome,</strong> {authContext?.user?.name}!</p>
-        <p><strong>Email:</strong> {authContext?.user?.email}</p>
-        <p>
-          <strong>Role:</strong>{' '}
-          <span style={{ 
-            backgroundColor: authContext?.user?.role === 'Manager' ? '#dbeafe' : '#dcfce7',
-            color: authContext?.user?.role === 'Manager' ? '#1e40af' : '#166534',
-            padding: '4px 8px', 
-            borderRadius: '4px',
-            fontSize: '0.875rem' 
-          }}>
-            {authContext?.user?.role}
-          </span>
-        </p>
-        <button 
-          onClick={authContext?.logout}
-          style={{
-            marginTop: '1.5rem',
-            padding: '0.5rem 1rem',
-            backgroundColor: '#ef4444',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-        >
-          Logout
-        </button>
-      </div>
+    <div style={{ padding: '2rem', fontFamily: 'sans-serif', textAlign: 'center' }}>
+      <h1>Manager Dashboard</h1>
+      <p>This comprehensive view is coming soon in the next step!</p>
+      <button 
+        onClick={authContext?.logout}
+        style={{ 
+          marginTop: '1rem', 
+          padding: '0.5rem 1rem', 
+          cursor: 'pointer',
+          backgroundColor: '#ef4444',
+          color: 'white',
+          border: 'none',
+          borderRadius: '4px'
+        }}
+      >
+        Sign Out
+      </button>
     </div>
   );
 };
@@ -81,7 +72,7 @@ const AppRoutes = () => {
           path="/" 
           element={
             <ProtectedRoute>
-              <DashboardPlaceholder />
+              <DashboardRedirect />
             </ProtectedRoute>
           } 
         />
