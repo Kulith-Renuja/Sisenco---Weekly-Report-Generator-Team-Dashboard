@@ -115,3 +115,8 @@ code {
 /* Form Fixes */
 input, select, textarea { color: #111827 !important; background-color: #ffffff !important; }
 input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0); opacity: 1; cursor: pointer; }
+
+/* Action Buttons */
+.dashboard-action-btn { margin-right: 8px; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; }
+.dashboard-action-btn.edit { background-color: #f3f4f6; color: #374151; }
+.dashboard-action-btn.delete { background-color: #fee2e2; color: #b91c1c; }

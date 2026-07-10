@@ -12,6 +12,7 @@ const TeamMemberDashboard: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [editingReport, setEditingReport] = useState<Report | null>(null);
   const [error, setError] = useState('');
 
   // Fetch data on initial component mount
@@ -37,26 +38,57 @@ const TeamMemberDashboard: React.FC = () => {
     }
   };
 
-  const handleCreateReport = async (data: Partial<Report>) => {
+  const handleSaveReport = async (data: Partial<Report>) => {
     try {
-      const res = await api.post('/reports', data);
+      if (editingReport) {
+        const res = await api.put(`/reports/${editingReport._id}`, data);
+        
+        const selectedProject = projects.find(p => p._id === res.data.project);
+        const updatedReport = {
+          ...res.data,
+          project: selectedProject || res.data.project
+        };
 
-      // The newly created report comes back from the API.
-      // We manually attach the populated Project object to match the table structure.
-      const selectedProject = projects.find(p => p._id === res.data.project);
-      const newReport = {
-        ...res.data,
-        project: selectedProject || res.data.project
-      };
+        setReports(reports.map(r => r._id === updatedReport._id ? updatedReport : r));
+        setEditingReport(null);
+      } else {
+        const res = await api.post('/reports', data);
 
-      // Update the local state so the table immediately re-renders
-      setReports([newReport, ...reports]);
+        const selectedProject = projects.find(p => p._id === res.data.project);
+        const newReport = {
+          ...res.data,
+          project: selectedProject || res.data.project
+        };
+
+        setReports([newReport, ...reports]);
+      }
       setShowForm(false);
     } catch (err: any) {
       const msg = err.response?.data?.message || 'Error saving report';
       alert(msg);
-      throw err; // Propagate error so ReportForm stops loading state
+      throw err;
     }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm('Are you sure you want to delete this report?')) {
+      try {
+        await api.delete(`/reports/${id}`);
+        setReports(reports.filter(r => r._id !== id));
+      } catch (err: any) {
+        alert(err.response?.data?.message || 'Failed to delete report.');
+      }
+    }
+  };
+
+  const handleEditClick = (report: Report) => {
+    setEditingReport(report);
+    setShowForm(true);
+  };
+
+  const handleCancelForm = () => {
+    setEditingReport(null);
+    setShowForm(false);
   };
 
   if (loading) {
@@ -82,8 +114,9 @@ const TeamMemberDashboard: React.FC = () => {
       {showForm && (
         <ReportForm
           projects={projects}
-          onSubmit={handleCreateReport}
-          onCancel={() => setShowForm(false)}
+          onSubmit={handleSaveReport}
+          onCancel={handleCancelForm}
+          initialData={editingReport}
         />
       )}
 
@@ -102,6 +135,7 @@ const TeamMemberDashboard: React.FC = () => {
                   <th style={styles.th}>Project</th>
                   <th style={styles.th}>Status</th>
                   <th style={styles.th}>Submitted At</th>
+                  <th style={styles.th}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -126,6 +160,14 @@ const TeamMemberDashboard: React.FC = () => {
                       {report.submittedAt
                         ? new Date(report.submittedAt).toLocaleDateString()
                         : '—'}
+                    </td>
+                    <td style={styles.td}>
+                      <button className="dashboard-action-btn edit" onClick={() => handleEditClick(report)}>
+                        Edit
+                      </button>
+                      <button className="dashboard-action-btn delete" onClick={() => handleDelete(report._id as string)}>
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))}

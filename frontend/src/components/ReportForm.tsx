@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { Project, Report } from '../types';
 
 interface ReportFormProps {
   projects: Project[];
   onSubmit: (data: Partial<Report>) => Promise<void>;
   onCancel: () => void;
+  initialData?: Partial<Report> | null;
 }
 
-const ReportForm: React.FC<ReportFormProps> = ({ projects, onSubmit, onCancel }) => {
+const ReportForm: React.FC<ReportFormProps> = ({ projects, onSubmit, onCancel, initialData }) => {
   const [formData, setFormData] = useState<Partial<Report>>({
     weekStartDate: '',
     weekEndDate: '',
@@ -20,6 +21,22 @@ const ReportForm: React.FC<ReportFormProps> = ({ projects, onSubmit, onCancel })
     status: 'Draft'
   });
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        weekStartDate: initialData.weekStartDate ? String(initialData.weekStartDate).split('T')[0] : '',
+        weekEndDate: initialData.weekEndDate ? String(initialData.weekEndDate).split('T')[0] : '',
+        project: typeof initialData.project === 'object' ? (initialData.project as Project)._id : initialData.project,
+        tasksCompleted: initialData.tasksCompleted || '',
+        tasksPlanned: initialData.tasksPlanned || '',
+        blockers: initialData.blockers || '',
+        hoursWorked: initialData.hoursWorked || 0,
+        notes: initialData.notes || '',
+        status: initialData.status || 'Draft'
+      });
+    }
+  }, [initialData]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -161,7 +178,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ projects, onSubmit, onCancel })
         <div style={styles.buttonGroup}>
           <button type="button" onClick={onCancel} style={styles.cancelBtn}>Cancel</button>
           <button type="submit" disabled={loading} style={styles.submitBtn}>
-            {loading ? 'Saving...' : 'Save Report'}
+            {loading ? 'Saving...' : (initialData?._id ? 'Update Report' : 'Save Report')}
           </button>
         </div>
       </form>
