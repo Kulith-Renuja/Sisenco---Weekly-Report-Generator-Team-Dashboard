@@ -4,6 +4,7 @@ import { AuthProvider, AuthContext } from './context/AuthContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import TeamMemberDashboard from './pages/TeamMemberDashboard';
+import ManagerDashboard from './pages/ManagerDashboard';
 
 // ProtectedRoute Component: Ensures user is authenticated before accessing wrapped routes
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -31,29 +32,19 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const DashboardRedirect = () => {
   const authContext = useContext(AuthContext);
   
+  if (authContext?.user?.role === 'Manager') {
+    return <ManagerDashboard />;
+  }
+  
   if (authContext?.user?.role === 'Team Member') {
     return <TeamMemberDashboard />;
   }
   
-  // If role is Manager, show placeholder for now (will be implemented next)
+  // Fallback if role is undefined or invalid
   return (
-    <div style={{ padding: '2rem', fontFamily: 'sans-serif', textAlign: 'center' }}>
-      <h1>Manager Dashboard</h1>
-      <p>This comprehensive view is coming soon in the next step!</p>
-      <button 
-        onClick={authContext?.logout}
-        style={{ 
-          marginTop: '1rem', 
-          padding: '0.5rem 1rem', 
-          cursor: 'pointer',
-          backgroundColor: '#ef4444',
-          color: 'white',
-          border: 'none',
-          borderRadius: '4px'
-        }}
-      >
-        Sign Out
-      </button>
+    <div style={{ padding: '2rem', textAlign: 'center' }}>
+      <p>Invalid role detected.</p>
+      <button onClick={authContext?.logout}>Sign Out</button>
     </div>
   );
 };

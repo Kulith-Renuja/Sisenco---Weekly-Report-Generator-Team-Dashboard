@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
 import api from '../services/api';
-import { Project, Report } from '../types';
+import type { Project, Report } from '../types';
 import ReportForm from '../components/ReportForm';
 import { AuthContext } from '../context/AuthContext';
 
 const TeamMemberDashboard: React.FC = () => {
   const authContext = useContext(AuthContext);
-  
+
   const [reports, setReports] = useState<Report[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,7 +39,7 @@ const TeamMemberDashboard: React.FC = () => {
   const handleCreateReport = async (data: Partial<Report>) => {
     try {
       const res = await api.post('/reports', data);
-      
+
       // The newly created report comes back from the API.
       // We manually attach the populated Project object to match the table structure.
       const selectedProject = projects.find(p => p._id === res.data.project);
@@ -47,7 +47,7 @@ const TeamMemberDashboard: React.FC = () => {
         ...res.data,
         project: selectedProject || res.data.project
       };
-      
+
       // Update the local state so the table immediately re-renders
       setReports([newReport, ...reports]);
       setShowForm(false);
@@ -88,17 +88,17 @@ const TeamMemberDashboard: React.FC = () => {
 
       {/* Conditional Form Render */}
       {showForm && (
-        <ReportForm 
-          projects={projects} 
-          onSubmit={handleCreateReport} 
-          onCancel={() => setShowForm(false)} 
+        <ReportForm
+          projects={projects}
+          onSubmit={handleCreateReport}
+          onCancel={() => setShowForm(false)}
         />
       )}
 
       {/* Reports Table Card */}
       <div style={styles.card}>
         <h2 style={styles.cardTitle}>Past Reports</h2>
-        
+
         {reports.length === 0 ? (
           <p style={styles.emptyText}>You haven't submitted any reports yet.</p>
         ) : (
@@ -122,8 +122,8 @@ const TeamMemberDashboard: React.FC = () => {
                       {(report.project as Project).name || 'Unknown Project'}
                     </td>
                     <td style={styles.td}>
-                      <span style={{ 
-                        ...styles.badge, 
+                      <span style={{
+                        ...styles.badge,
                         backgroundColor: report.status === 'Submitted' ? '#dcfce7' : '#fef3c7',
                         color: report.status === 'Submitted' ? '#166534' : '#92400e'
                       }}>
@@ -131,8 +131,8 @@ const TeamMemberDashboard: React.FC = () => {
                       </span>
                     </td>
                     <td style={styles.td}>
-                      {report.submittedAt 
-                        ? new Date(report.submittedAt).toLocaleDateString() 
+                      {report.submittedAt
+                        ? new Date(report.submittedAt).toLocaleDateString()
                         : '—'}
                     </td>
                   </tr>
