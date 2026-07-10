@@ -147,11 +147,11 @@ const TeamMemberDashboard: React.FC = () => {
 };
 
 const styles = {
-  container: { padding: '2rem', maxWidth: '1100px', margin: '0 auto', fontFamily: 'sans-serif', minHeight: '100vh' },
-  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' },
+  container: { padding: '2rem', width: '100%', maxWidth: '1200px', margin: '0 auto', fontFamily: 'sans-serif', minHeight: '100vh', position: 'relative' as const, paddingBottom: '6rem' },
+  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2.5rem' },
   pageTitle: { margin: 0, fontSize: '1.875rem', color: '#111827', fontWeight: 700 },
   subtitle: { margin: '0.25rem 0 0 0', color: '#6b7280', fontSize: '1rem' },
-  logoutBtn: { padding: '0.625rem 1rem', border: '1px solid #d1d5db', backgroundColor: 'white', borderRadius: '6px', cursor: 'pointer', fontWeight: 500, color: '#374151' },
+  logoutBtn: { position: 'absolute' as const, bottom: '2rem', left: '50%', transform: 'translateX(-50%)', padding: '0.625rem 1.5rem', border: '1px solid #d1d5db', backgroundColor: 'white', borderRadius: '6px', cursor: 'pointer', fontWeight: 500, color: '#374151' },
   actions: { marginBottom: '1.5rem' },
   primaryBtn: { padding: '0.75rem 1.5rem', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.875rem' },
   error: { padding: '1rem', backgroundColor: '#fee2e2', color: '#b91c1c', borderRadius: '6px', marginBottom: '1.5rem' },

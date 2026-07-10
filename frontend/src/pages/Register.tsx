@@ -125,6 +125,7 @@ const styles = {
     minHeight: '100vh',
     backgroundColor: '#f4f7f6',
     padding: '1rem',
+    width: '100%',
   },
   card: {
     backgroundColor: 'white',
@@ -171,6 +172,8 @@ const styles = {
     border: '1px solid #d1d5db',
     fontSize: '1rem',
     outline: 'none',
+    backgroundColor: 'white',
+    color: '#1f2937'
   },
   select: {
     padding: '0.75rem',
@@ -179,6 +182,7 @@ const styles = {
     fontSize: '1rem',
     outline: 'none',
     backgroundColor: 'white',
+    color: '#1f2937'
   },
   button: {
     backgroundColor: '#2563eb',
