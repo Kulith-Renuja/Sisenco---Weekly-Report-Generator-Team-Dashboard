@@ -3,6 +3,7 @@ import api from '../services/api';
 import type { Project, Report } from '../types';
 import ReportForm from '../components/ReportForm';
 import { AuthContext } from '../context/AuthContext';
+import Navbar from '../components/Navbar';
 
 const TeamMemberDashboard: React.FC = () => {
   const authContext = useContext(AuthContext);
@@ -63,19 +64,10 @@ const TeamMemberDashboard: React.FC = () => {
   }
 
   return (
-    <div style={styles.container}>
-      {/* Top Header */}
-      <header style={styles.header}>
-        <div>
-          <h1 style={styles.pageTitle}>My Weekly Reports</h1>
-          <p style={styles.subtitle}>Welcome back, {authContext?.user?.name}</p>
-        </div>
-        <button style={styles.logoutBtn} onClick={authContext?.logout}>
-          Sign out
-        </button>
-      </header>
-
-      {error && <div style={styles.error}>{error}</div>}
+    <>
+      <Navbar />
+      <div className="dashboard-layout">
+        {error && <div style={styles.error}>{error}</div>}
 
       {/* Actions Area */}
       <div style={styles.actions}>
@@ -143,15 +135,11 @@ const TeamMemberDashboard: React.FC = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 
 const styles = {
-  container: { padding: '2rem', width: '100%', maxWidth: '1200px', margin: '0 auto', fontFamily: 'sans-serif', minHeight: '100vh', position: 'relative' as const, paddingBottom: '6rem' },
-  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2.5rem' },
-  pageTitle: { margin: 0, fontSize: '1.875rem', color: '#111827', fontWeight: 700 },
-  subtitle: { margin: '0.25rem 0 0 0', color: '#6b7280', fontSize: '1rem' },
-  logoutBtn: { position: 'absolute' as const, bottom: '2rem', left: '50%', transform: 'translateX(-50%)', padding: '0.625rem 1.5rem', border: '1px solid #d1d5db', backgroundColor: 'white', borderRadius: '6px', cursor: 'pointer', fontWeight: 500, color: '#374151' },
   actions: { marginBottom: '1.5rem' },
   primaryBtn: { padding: '0.75rem 1.5rem', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.875rem' },
   error: { padding: '1rem', backgroundColor: '#fee2e2', color: '#b91c1c', borderRadius: '6px', marginBottom: '1.5rem' },

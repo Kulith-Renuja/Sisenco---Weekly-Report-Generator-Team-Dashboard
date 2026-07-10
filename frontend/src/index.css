@@ -109,3 +109,9 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+/* Layout Fixes */
+.dashboard-layout { width: 100%; box-sizing: border-box; padding: 1.5rem; max-width: 1400px; margin: 0 auto; }
+/* Form Fixes */
+input, select, textarea { color: #111827 !important; background-color: #ffffff !important; }
+input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0); opacity: 1; cursor: pointer; }

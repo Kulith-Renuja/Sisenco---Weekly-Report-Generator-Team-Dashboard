@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext, useMemo } from 'react';
 import api from '../services/api';
 import type { Report, Project, User } from '../types';
 import { AuthContext } from '../context/AuthContext';
+import Navbar from '../components/Navbar';
 import AIChatWidget from '../components/AIChatWidget';
 import {
   BarChart,
@@ -117,19 +118,10 @@ const ManagerDashboard: React.FC = () => {
   }
 
   return (
-    <div style={styles.container}>
-      {/* Header */}
-      <header style={styles.header}>
-        <div>
-          <h1 style={styles.pageTitle}>Manager Dashboard</h1>
-          <p style={styles.subtitle}>Welcome back, {authContext?.user?.name}</p>
-        </div>
-        <button style={styles.logoutBtn} onClick={authContext?.logout}>
-          Sign Out
-        </button>
-      </header>
-
-      {error && <div style={styles.error}>{error}</div>}
+    <>
+      <Navbar />
+      <div className="dashboard-layout">
+        {error && <div style={styles.error}>{error}</div>}
 
       {/* Summary Metrics Section */}
       <div style={styles.metricsContainer}>
@@ -284,16 +276,12 @@ const ManagerDashboard: React.FC = () => {
 
       {/* AI Assistant Chat Widget */}
       <AIChatWidget />
-    </div>
+      </div>
+    </>
   );
 };
 
 const styles = {
-  container: { padding: '2rem', width: '100%', maxWidth: '1200px', margin: '0 auto', fontFamily: 'sans-serif', backgroundColor: '#f9fafb', minHeight: '100vh', position: 'relative' as const, paddingBottom: '6rem' },
-  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2.5rem' },
-  pageTitle: { margin: 0, fontSize: '1.875rem', color: '#111827', fontWeight: 700 },
-  subtitle: { margin: '0.25rem 0 0 0', color: '#6b7280', fontSize: '1rem' },
-  logoutBtn: { position: 'absolute' as const, bottom: '2rem', left: '50%', transform: 'translateX(-50%)', padding: '0.625rem 1.5rem', border: '1px solid #d1d5db', backgroundColor: 'white', borderRadius: '6px', cursor: 'pointer', fontWeight: 500, color: '#374151' },
   loading: { padding: '4rem', textAlign: 'center' as const, color: '#6b7280', fontSize: '1.125rem' },
   error: { padding: '1rem', backgroundColor: '#fee2e2', color: '#b91c1c', borderRadius: '6px', marginBottom: '1.5rem' },
 
