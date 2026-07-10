@@ -6,6 +6,7 @@ import { MessageCircle, X, Send, Loader2 } from 'lucide-react';
 interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
+  isError?: boolean;
 }
 
 const AIChatWidget: React.FC = () => {
@@ -42,7 +43,8 @@ const AIChatWidget: React.FC = () => {
         ...prev, 
         { 
           role: 'assistant', 
-          content: error.response?.data?.message || 'Sorry, I encountered an error communicating with the AI service.' 
+          content: 'The AI is currently unavailable.',
+          isError: true
         }
       ]);
     } finally {
@@ -80,10 +82,11 @@ const AIChatWidget: React.FC = () => {
                 >
                   <div style={{
                     ...styles.messageBubble,
-                    backgroundColor: msg.role === 'user' ? '#2563eb' : '#f3f4f6',
-                    color: msg.role === 'user' ? 'white' : '#1f2937',
+                    backgroundColor: msg.role === 'user' ? '#2563eb' : (msg.isError ? '#fee2e2' : '#f3f4f6'),
+                    color: msg.role === 'user' ? 'white' : (msg.isError ? '#b91c1c' : '#1f2937'),
                     borderBottomRightRadius: msg.role === 'user' ? '2px' : '16px',
                     borderBottomLeftRadius: msg.role === 'assistant' ? '2px' : '16px',
+                    border: msg.isError ? '1px solid #f87171' : 'none',
                   }}>
                     {msg.content}
                   </div>
