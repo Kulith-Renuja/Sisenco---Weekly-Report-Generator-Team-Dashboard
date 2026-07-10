@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext, useMemo } from 'react';
 import api from '../services/api';
 import type { Report, Project, User } from '../types';
 import { AuthContext } from '../context/AuthContext';
+import AIChatWidget from '../components/AIChatWidget';
 import {
   BarChart,
   Bar,
@@ -216,6 +217,9 @@ const ManagerDashboard: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* AI Assistant Chat Widget */}
+      <AIChatWidget />
     </div>
   );
 };
