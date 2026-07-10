@@ -23,10 +23,12 @@ const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'
 const ManagerDashboard: React.FC = () => {
   const authContext = useContext(AuthContext);
   const [reports, setReports] = useState<Report[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [newProjectName, setNewProjectName] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Fetch all team reports on mount
+  // Fetch data on mount
   useEffect(() => {
     fetchData();
   }, []);
@@ -34,13 +36,41 @@ const ManagerDashboard: React.FC = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/reports');
-      setReports(response.data);
+      const [reportsRes, projectsRes] = await Promise.all([
+        api.get('/reports'),
+        api.get('/projects')
+      ]);
+      setReports(reportsRes.data);
+      setProjects(projectsRes.data);
     } catch (err: any) {
-      setError('Failed to load team reports from the server.');
+      setError('Failed to load dashboard data from the server.');
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCreateProject = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newProjectName.trim()) return;
+    try {
+      const res = await api.post('/projects', { name: newProjectName });
+      setProjects([...projects, res.data]);
+      setNewProjectName('');
+    } catch (err: any) {
+      console.error(err);
+      setError(err.response?.data?.message || 'Failed to create project.');
+    }
+  };
+
+  const handleDeleteProject = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this project?')) return;
+    try {
+      await api.delete(`/projects/${id}`);
+      setProjects(projects.filter(p => p._id !== id));
+    } catch (err: any) {
+      console.error(err);
+      setError('Failed to delete project. It may be associated with existing reports.');
     }
   };
 
@@ -166,6 +196,40 @@ const ManagerDashboard: React.FC = () => {
         </div>
       </div>
 
+      {/* Project Management Section */}
+      <div style={styles.projectManagementCard}>
+        <h2 style={styles.tableCardTitle}>Project Management</h2>
+        <div style={styles.projectManagementBody}>
+          <form onSubmit={handleCreateProject} style={styles.addProjectForm}>
+            <input 
+              type="text" 
+              placeholder="New Project Name" 
+              value={newProjectName}
+              onChange={(e) => setNewProjectName(e.target.value)}
+              style={styles.addProjectInput}
+            />
+            <button type="submit" style={styles.addProjectBtn} disabled={!newProjectName.trim() || loading}>
+              Add Project
+            </button>
+          </form>
+          
+          <div style={styles.projectsList}>
+            {projects.length === 0 ? (
+              <p style={styles.emptyText}>No projects created yet.</p>
+            ) : (
+              projects.map(project => (
+                <div key={project._id} style={styles.projectRow}>
+                  <span style={styles.projectName}>{project.name}</span>
+                  <button onClick={() => handleDeleteProject(project._id as string)} style={styles.deleteBtn}>
+                    Delete
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Data Table Section */}
       <div style={styles.tableCard}>
         <h2 style={styles.tableCardTitle}>Team Reports Detail</h2>
@@ -254,7 +318,17 @@ const styles = {
   userEmail: { fontSize: '0.75rem', color: '#6b7280' },
   emptyText: { padding: '3rem', textAlign: 'center' as const, color: '#64748b', fontSize: '0.875rem', width: '100%' },
   badge: { padding: '0.25rem 0.625rem', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 600 },
-  truncateText: { maxWidth: '250px', whiteSpace: 'nowrap' as const, overflow: 'hidden', textOverflow: 'ellipsis' }
+  truncateText: { maxWidth: '250px', whiteSpace: 'nowrap' as const, overflow: 'hidden', textOverflow: 'ellipsis' },
+  
+  projectManagementCard: { backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden', border: '1px solid #e5e7eb', marginBottom: '2rem' },
+  projectManagementBody: { padding: '1.5rem' },
+  addProjectForm: { display: 'flex', gap: '1rem', marginBottom: '1.5rem' },
+  addProjectInput: { flex: 1, padding: '0.625rem 1rem', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '0.875rem', outline: 'none', backgroundColor: 'white', color: '#1f2937' },
+  addProjectBtn: { padding: '0.625rem 1.5rem', backgroundColor: '#10b981', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 },
+  projectsList: { display: 'flex', flexDirection: 'column' as const, gap: '0.75rem', maxHeight: '250px', overflowY: 'auto' as const },
+  projectRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem 1rem', backgroundColor: '#f8fafc', border: '1px solid #e5e7eb', borderRadius: '6px' },
+  projectName: { fontSize: '0.875rem', fontWeight: 500, color: '#334155' },
+  deleteBtn: { padding: '0.4rem 0.75rem', backgroundColor: '#fee2e2', color: '#b91c1c', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 600 }
 };
 
 export default ManagerDashboard;

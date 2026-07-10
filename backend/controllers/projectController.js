@@ -43,7 +43,29 @@ const createProject = async (req, res) => {
   }
 };
 
+/**
+ * @desc    Delete a project
+ * @route   DELETE /api/projects/:id
+ * @access  Private (Manager only)
+ */
+const deleteProject = async (req, res) => {
+  try {
+    const project = await Project.findById(req.params.id);
+
+    if (!project) {
+      return res.status(404).json({ message: 'Project not found' });
+    }
+
+    await project.deleteOne();
+    res.status(200).json({ message: 'Project removed successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error: Could not delete project' });
+  }
+};
+
 module.exports = {
   getProjects,
   createProject,
+  deleteProject,
 };
